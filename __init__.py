@@ -10,11 +10,16 @@ http://inamidst.com/phenny/
 import sys, os, time, threading, signal
 import bot
 
-class Watcher(object): 
+class Watcher(object):
    # Cf. http://aspn.activestate.com/ASPN/Cookbook/Python/Recipe/496735
    def __init__(self):
       self.child = os.fork()
-      if self.child != 0: 
+      if self.child != 0:
+         f = open('/tmp/phenny.pid', 'w')
+         try:
+             f.write(str(self.child))
+         finally:
+             f.close()
          self.watch()
 
    def watch(self):
