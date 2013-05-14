@@ -12,10 +12,12 @@ import bot
 
 class Watcher(object):
    # Cf. http://aspn.activestate.com/ASPN/Cookbook/Python/Recipe/496735
-   def __init__(self, config_name='default'):
+   def __init__(self, config_file):
+      config_dir = os.path.dirname(config_file)
+      config_name = os.path.basename(config_file).split('.')[0]
       self.child = os.fork()
       if self.child != 0:
-         f = open('/tmp/phenny.%s.pid' % config_name, 'w')
+         f = open('%s/phenny.%s.pid' % (config_dir, config_name), 'w')
          try:
              f.write(str(self.child))
          finally:
@@ -41,8 +43,7 @@ def run_phenny(config):
       p = bot.Phenny(config)
       p.run(config.host, config.port)
 
-   config_name = os.path.basename(config.filename).split('.')[0]
-   try: Watcher(config_name)
+   try: Watcher(config.filename)
    except Exception, e:
       print >> sys.stderr, 'Warning:', e, '(in __init__.py)'
 
